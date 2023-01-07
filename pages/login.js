@@ -96,7 +96,7 @@ function Login() {
               <input
                 className={styles.input}
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Masukkan Email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -117,7 +117,7 @@ function Login() {
               <input
                 className={styles.input}
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Masukkan Password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);

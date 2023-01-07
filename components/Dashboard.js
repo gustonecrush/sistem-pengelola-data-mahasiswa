@@ -6,6 +6,46 @@ import styles from "../styles/Dashboard.module.css";
 
 function Dashboard() {
   const [mahasiswa, setMahasiswa] = useState([]);
+  const [hide, setHide] = useState(true);
+  const [fakultas, setFakultas] = useState([]);
+  const [validation, setValidation] = useState([]);
+
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [NIM, setNIM] = useState("");
+  const [semester, setSemester] = useState(null);
+  const [angkatan, setAngkatan] = useState("");
+  const [jenisKelamin, setJenisKelamin] = useState("");
+  const [fakultasId, setFakultasId] = useState(null);
+  const [prodiId, setProdiId] = useState(null);
+
+  const [programStudi, setProgramStudi] = useState([]);
+
+  const fetchDataFakultas = async () => {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await axios
+      .get(`http://localhost:8000/api/fakultas`)
+      .then((response) => {
+        setFakultas(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const fetchDataProgramStudi = async () => {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await axios
+      .get(`http://localhost:8000/api/prodi`)
+      .then((response) => {
+        setProgramStudi(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const confirmDelete = (e, NIM) => {
     Swal.fire({
@@ -24,6 +64,17 @@ function Dashboard() {
     });
   };
 
+  const clearData = () => {
+    setNama("");
+    setEmail("");
+    setFakultasId(null);
+    setProdiId(null);
+    setSemester(null);
+    setAngkatan("");
+    setNIM("");
+    setJenisKelamin("");
+  };
+
   // delete handler
   const deleteHandler = async (e, NIM) => {
     e.preventDefault();
@@ -33,11 +84,42 @@ function Dashboard() {
     await axios
       .delete(`http://localhost:8000/api/mahasiswa/${NIM}`)
       .then((response) => {
-        console.log(response);
         fetchDataMahasiswa();
       })
       .catch((error) => {
         console.log(error);
+      });
+  };
+
+  // create handler
+  const createHandler = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("nama", nama);
+    formData.append("email", email);
+    formData.append("NIM", NIM);
+    formData.append("semester", semester);
+    formData.append("jenis_kelamin", jenisKelamin);
+    formData.append("angkatan", angkatan);
+    formData.append("fakultas_id", fakultasId);
+    formData.append("prodi_id", prodiId);
+
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    await axios
+      .post("http://localhost:8000/api/mahasiswa", formData)
+      .then((response) => {
+        setHide(true);
+        clearData();
+        Swal.fire("Success!", "Data Mahasiswa Added Successfully!", "success");
+        fetchDataMahasiswa();
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        setValidation(error.response.data);
       });
   };
 
@@ -57,7 +139,12 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDataMahasiswa();
+    fetchDataFakultas();
+    fetchDataProgramStudi();
   }, []);
+
+  console.log(programStudi);
+  console.log(fakultasId);
 
   return (
     <>
@@ -71,9 +158,9 @@ function Dashboard() {
           style={{
             background: "#DDEDFF",
             color: "#288BFF",
-            marginLeft: "1.5rem"
+            marginLeft: "1.5rem",
           }}
-          onClick={(e) => console.log(e)}
+          onClick={(e) => setHide(false)}
         >
           Tambah Data Mahasiswa
         </button>
@@ -93,7 +180,13 @@ function Dashboard() {
                 <span>{item?.nama}</span> | {item?.NIM}
               </Name>
             </a>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "5px",
+              }}
+            >
               <button
                 className={styles.btn}
                 style={{ background: "#FDF8EF", color: "#F6D35C" }}
@@ -113,6 +206,96 @@ function Dashboard() {
           </Card>
         ))}
       </div>
+
+      {!hide && (
+        <div className={styles.container}>
+          <div className={styles.cookiesContent} id="cookiesPopup">
+            <button className={styles.close} onClick={(e) => setHide(true)}>
+              ✖
+            </button>
+            <form action="" className={styles.form}>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Masukkan Nama"
+                value={nama}
+                onChange={(e) => setNama(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="email"
+                placeholder="Masukkan Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Masukkan NIM"
+                value={NIM}
+                onChange={(e) => setNIM(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="number"
+                placeholder="Masukkan Semester"
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Masukkan Angkatan"
+                value={angkatan}
+                onChange={(e) => setAngkatan(e.target.value)}
+              />
+              <select
+                className={styles.input}
+                style={{ paddingRight: "2rem" }}
+                value={jenisKelamin}
+                onChange={(e) => setJenisKelamin(e.target.value)}
+              >
+                <option value={""}>Pilih Jenis Kelamin</option>
+                <option value={"Pria"}>Pria</option>
+                <option value={"Wanita"}>Wanita</option>
+              </select>
+              <select
+                className={styles.input}
+                style={{ paddingRight: "2rem" }}
+                value={fakultasId}
+                onChange={(e) => setFakultasId(e.target.value)}
+              >
+                <option key={-1} value={-1}>
+                  Pilih Fakultas
+                </option>
+                {fakultas?.map((item) => (
+                  <option key={item?.id} value={item?.id}>
+                    {item?.fakultas}
+                  </option>
+                ))}
+              </select>
+              <select
+                className={styles.input}
+                style={{ paddingRight: "2rem" }}
+                value={prodiId}
+                onChange={(e) => setProdiId(e.target.value)}
+              >
+                <option key={-1} value={-1}>
+                  Pilih Program Studi
+                </option>
+                {programStudi?.map((item) => (
+                  <option key={item?.id} value={item?.id}>
+                    {item?.program_studi}
+                  </option>
+                ))}
+              </select>
+            </form>
+            <button className={styles.accept} onClick={createHandler}>
+              Tambah Data
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -130,6 +313,11 @@ const Card = styled.div`
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s all;
+
+  &:hover {
+    background: #f7f7f9;
+  }
 `;
 
 const Name = styled.h2`
