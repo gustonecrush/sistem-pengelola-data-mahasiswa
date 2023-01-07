@@ -2,20 +2,53 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "../styles/Index.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dashboard from "../components/Dashboard";
 import Search from "../components/Search";
+import { useRouter } from "next/router";
+import axios from "axios";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Index() {
   const [activeMenu, setActiveMenu] = useState("Dashboard");
+
+  // user data
   const [user, setUser] = useState([]);
 
-  // function to logout from application
-  const logoutHandler = () => {
-    console.log("LOGOUT");
+  // router
+  const router = useRouter();
+
+  // fetch data user
+  const fetchDataUser = async () => {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await axios.post("http://localhost:8000/api/me").then((response) => {
+      setUser(response.data);
+    });
   };
+
+  // check if there is no token
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      fetchDataUser();
+    }
+  }, []);
+
+  // function to logout from application
+  const logoutHandler = async () => {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await axios.post("http://localhost:8000/api/logout").then((response) => {
+      localStorage.removeItem("token");
+      router.push("/login");
+    });
+  };
+
+  console.log(user);
 
   return (
     <>
@@ -27,8 +60,8 @@ export default function Index() {
       </Head>
       <main className={styles.main}>
         <div className={styles.sidebar}>
-          <div class={styles.profile}>
-            <Image />
+          <div className={styles.profile}>
+            {/* <Image /> */}
             <ul className={styles.profileContainerList}>
               <li
                 style={{
@@ -37,7 +70,7 @@ export default function Index() {
                   fontWeight: "normal",
                 }}
               >
-                Farhan Agustiansyah
+                {user.name}
               </li>
               <li
                 style={{
