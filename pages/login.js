@@ -4,6 +4,7 @@ import Head from "next/head";
 import { Router, useRouter } from "next/router";
 import { NextResponse } from "next/server";
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import styles from "../styles/Login.module.css";
 
 function Login() {
@@ -40,6 +41,7 @@ function Login() {
       .then((response) => {
         localStorage.setItem("token", response.data.access_token);
         router.push("/");
+        Swal.fire("Success!", "Login Successfully!", "success");
         console.log(response);
       })
       .catch((error) => {

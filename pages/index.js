@@ -7,6 +7,9 @@ import Dashboard from "../components/Dashboard";
 import Search from "../components/Search";
 import { useRouter } from "next/router";
 import axios from "axios";
+import Swal from "sweetalert2";
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,10 +48,9 @@ export default function Index() {
     await axios.post("http://localhost:8000/api/logout").then((response) => {
       localStorage.removeItem("token");
       router.push("/login");
+      Swal.fire("Success!", "Logout Successfully!", "success");
     });
   };
-
-  console.log(user);
 
   return (
     <>
@@ -97,7 +99,10 @@ export default function Index() {
                     : { color: "#FFFFFF" }
                 }
               >
-                Dashboard
+                <GridViewRoundedIcon
+                  color={activeMenu == "Dashboard" ? "#83D887" : "#FFFFFF"}
+                />
+                <p>Dashboard</p>
               </li>
               <li
                 className={styles.menuItem}
@@ -110,7 +115,10 @@ export default function Index() {
                     : { color: "#FFFFFF" }
                 }
               >
-                Search
+                <SearchRoundedIcon
+                  color={activeMenu == "Search" ? "#83D887" : "#FFFFFF"}
+                />
+                <p>Search</p>
               </li>
             </ul>
           </div>
