@@ -11,8 +11,18 @@ function Login() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className={styles.main}>
-        <h1 className={styles.text}>LOGIN</h1>
+        <div className={styles.loginInnerContainer}>
+          <img src="https://i.postimg.cc/L5hQM7Dw/graduation.png" />
+          <h1 style={{ color: "#020b2a", marginTop: "-2rem" }}>
+            Sign in to <br />
+            Sistem Pengelola Data Mahasiswa
+          </h1>
+          <p style={{ color: "#020b2a" }}>by farhanaugustiansyah</p>
+
+          <button className={styles.btn}>Sign in</button>
+        </div>
       </main>
     </>
   );
