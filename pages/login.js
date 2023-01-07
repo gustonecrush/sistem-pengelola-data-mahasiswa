@@ -9,6 +9,7 @@ import styles from "../styles/Login.module.css";
 
 function Login() {
   const [hide, setHide] = useState(false);
+  const [close, setClose] = useState(false);
 
   // user input
   const [email, setEmail] = useState("");
@@ -46,8 +47,18 @@ function Login() {
       })
       .catch((error) => {
         console.log(error.response.data);
+        setClose(false);
         setValidation(error.response.data);
       });
+  };
+
+  const alert = () => {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Email or Password is wrong",
+    });
+    setClose(true);
   };
 
   return (
@@ -58,6 +69,8 @@ function Login() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      {!close && validation.error && alert()}
 
       <main className={styles.main}>
         {!hide && (
@@ -89,6 +102,18 @@ function Login() {
                   setEmail(e.target.value);
                 }}
               />
+              {validation.email && (
+                <p
+                  style={{
+                    color: "red",
+                    textAlign: "left",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {"* " + validation.email[0]}
+                </p>
+              )}
               <input
                 className={styles.input}
                 type="password"
@@ -98,6 +123,18 @@ function Login() {
                   setPassword(e.target.value);
                 }}
               />
+              {!password && validation.password && (
+                <p
+                  style={{
+                    color: "red",
+                    textAlign: "left",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {"* " + validation.password[0]}
+                </p>
+              )}
             </form>
 
             <button onClick={signIn} className={styles.btn}>

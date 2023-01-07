@@ -12,6 +12,7 @@
 }
 
 .sidebar {
+  z-index: 1;
   display: flex;
   flex-direction: column;
   padding: 8rem 0 0 0;
@@ -19,7 +20,7 @@
   flex: 1;
   width: 20%;
   background: yellow;
-  background-image: linear-gradient(to right top,#0a1332, #232d52);
+  background-image: linear-gradient(to right top, #0a1332, #232d52);
 }
 
 .content {
@@ -74,5 +75,5 @@
 }
 
 .menuItem p {
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }

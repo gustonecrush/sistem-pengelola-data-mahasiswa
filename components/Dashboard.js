@@ -1,10 +1,28 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 import styles from "../styles/Dashboard.module.css";
 
 function Dashboard() {
   const [mahasiswa, setMahasiswa] = useState([]);
+
+  const confirmDelete = (e, NIM) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#9599A6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteHandler(e, NIM);
+        Swal.fire("Deleted!", "Data Mahasiswa has been deleted.", "success");
+      }
+    });
+  };
 
   // delete handler
   const deleteHandler = async (e, NIM) => {
@@ -21,6 +39,11 @@ function Dashboard() {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  // update handler
+  const updateHandler = async (e, NIM) => {
+    e.preventDefault();
   };
 
   // fetch data user
@@ -43,6 +66,17 @@ function Dashboard() {
       </h1>
 
       <div className={styles.tableContainer}>
+        <button
+          className={styles.btn}
+          style={{
+            background: "#DDEDFF",
+            color: "#288BFF",
+            marginLeft: "1.5rem"
+          }}
+          onClick={(e) => console.log(e)}
+        >
+          Tambah Data Mahasiswa
+        </button>
         {mahasiswa.map((item) => (
           <Card key={item?.NIM}>
             <a
@@ -70,7 +104,7 @@ function Dashboard() {
                 className={styles.btn}
                 style={{ background: "#FFECF2", color: "#E44A79" }}
                 onClick={(e) => {
-                  deleteHandler(e, item?.NIM);
+                  confirmDelete(e, item?.NIM);
                 }}
               >
                 Delete
