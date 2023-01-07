@@ -1,8 +1,53 @@
+import axios from "axios";
+import { redirect } from "next/dist/server/api-utils";
 import Head from "next/head";
-import React from "react";
+import { Router, useRouter } from "next/router";
+import { NextResponse } from "next/server";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/Login.module.css";
 
 function Login() {
+  const [hide, setHide] = useState(false);
+
+  // user input
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const router = useRouter();
+
+  // validation
+  const [validation, setValidation] = useState([]);
+
+  const signInShowUp = () => {
+    setHide(true);
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      router.push("/");
+    }
+  }, []);
+
+  const signIn = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    await axios
+      .post("http://localhost:8000/api/login", formData)
+      .then((response) => {
+        localStorage.setItem("token", response.data.access_token);
+        router.push("/");
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        setValidation(error.response.data);
+      });
+  };
+
   return (
     <>
       <Head>
@@ -13,16 +58,51 @@ function Login() {
       </Head>
 
       <main className={styles.main}>
-        <div className={styles.loginInnerContainer}>
-          <img src="https://i.postimg.cc/L5hQM7Dw/graduation.png" />
-          <h1 style={{ color: "#020b2a", marginTop: "-2rem" }}>
-            Sign in to <br />
-            Sistem Pengelola Data Mahasiswa
-          </h1>
-          <p style={{ color: "#020b2a" }}>by farhanaugustiansyah</p>
+        {!hide && (
+          <div className={styles.loginInnerContainer}>
+            <img src="https://i.postimg.cc/L5hQM7Dw/graduation.png" />
+            <h1 style={{ color: "#FFF", marginTop: "-2rem" }}>
+              Sign in to <br />
+              Sistem Pengelola Data Mahasiswa
+            </h1>
+            <p style={{ color: "#FFF" }}>by farhanaugustiansyah</p>
 
-          <button className={styles.btn}>Sign in</button>
-        </div>
+            <button onClick={signInShowUp} className={styles.btn}>
+              Sign In
+            </button>
+          </div>
+        )}
+        {hide && (
+          <div className={styles.loginInnerContainer}>
+            <img src="https://i.postimg.cc/L5hQM7Dw/graduation.png" />
+            <h1 style={{ color: "#FFF", marginTop: "-2.5rem" }}>Sign In</h1>
+
+            <form action="" className={styles.form}>
+              <input
+                className={styles.input}
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <input
+                className={styles.input}
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+            </form>
+
+            <button onClick={signIn} className={styles.btn}>
+              Sign In
+            </button>
+          </div>
+        )}
       </main>
     </>
   );

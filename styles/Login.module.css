@@ -13,7 +13,7 @@
 .loginInnerContainer {
   padding: 100px;
   text-align: center;
-  background-color: white;
+  background-image: linear-gradient(to right top, #0a1332, #232d52);
   border-radius: 20px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
@@ -33,7 +33,6 @@
 
 .btn {
   width: 10rem;
-
   outline: none;
   border: none;
   padding: 8px 30px;
@@ -42,4 +41,20 @@
   font-size: 16px;
   font-weight: 500;
   margin-top: -1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+}
+
+.input {
+  background: white;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 15px;
+  color: #020b2a;
+  font-weight: 400;
 }
