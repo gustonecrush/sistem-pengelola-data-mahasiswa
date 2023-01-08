@@ -10,6 +10,7 @@ function Dashboard() {
   const [mahasiswaDetail, setMahasiswaDetail] = useState([]);
   const [hide, setHide] = useState(true);
   const [editHide, setEditHide] = useState(true);
+  const [detailHide, setDetailHide] = useState(true);
   const [fakultas, setFakultas] = useState([]);
   const [validation, setValidation] = useState([]);
   const [keyword, setKeyword] = useState("");
@@ -137,6 +138,13 @@ function Dashboard() {
       });
   };
 
+  // detail handler
+  const detailHandler = async (e, NIM) => {
+    e.preventDefault();
+    fetchDataMahasiswaDetail(NIM);
+    setDetailHide(false);
+  };
+
   // edit handler
   const editHandler = async (e, NIM) => {
     e.preventDefault();
@@ -195,7 +203,7 @@ function Dashboard() {
     fetchDataMahasiswaDetail;
   }, []);
 
-  console.log(mahasiswaDetail);
+  console.log(mahasiswaDetail?.prodi[0]?.program_studi);
 
   return (
     <>
@@ -271,8 +279,8 @@ function Dashboard() {
           })
           .map((item) => (
             <Card key={item?.NIM}>
-              <a
-                href={"/detail"}
+              <div
+                onClick={(e) => detailHandler(e, item?.NIM)}
                 style={{ display: "flex", alignItems: "center" }}
               >
                 <img
@@ -289,7 +297,7 @@ function Dashboard() {
                   <span>{item?.nama}</span> | {item?.NIM} |{" "}
                   {item?.prodi[0]?.program_studi}
                 </Name>
-              </a>
+              </div>
               <div
                 style={{
                   display: "flex",
@@ -318,12 +326,123 @@ function Dashboard() {
           ))}
       </div>
 
+      {!detailHide && (
+        <div className={styles.container}>
+          <div
+            className={styles.cookiesContent}
+            style={{
+              paddingTop: "30px",
+              paddingBottom: "30px",
+              position: "relative",
+            }}
+            id="cookiesPopup"
+          >
+            <button
+              className={styles.close}
+              style={{ position: "absolute", top: "50px" }}
+              onClick={(e) => setDetailHide(true)}
+            >
+              ✖
+            </button>
+            <img
+              src={
+                "https://pbs.twimg.com/profile_images/1537677628039380992/i3uUfk-Z_400x400.jpg"
+              }
+              style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "100px",
+                marginBottom: "5px",
+              }}
+            />
+            <Name>
+              <span>{mahasiswaDetail?.nama}</span>
+            </Name>
+            <Name style={{ fontSize: "13px" }}>{mahasiswaDetail?.NIM}</Name>
+            <span
+              style={{
+                background: "#f5f5f5",
+                height: "1px",
+                width: "100%",
+                marginTop: "5px",
+              }}
+            ></span>
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Nama : </span>
+                {mahasiswaDetail?.nama}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>NIM : </span>
+                {mahasiswaDetail?.NIM}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Email : </span>
+                {mahasiswaDetail?.email}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Semester : </span>
+                {mahasiswaDetail?.semester}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Angkatan : </span>
+                {mahasiswaDetail?.angkatan}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Jenis Kelamin : </span>
+                {mahasiswaDetail?.jenis_kelamin}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Program Studi : </span>
+                {mahasiswaDetail?.prodi[0]?.program_studi}
+              </span>
+            </Card>
+
+            <Card style={{ width: "100%", padding: "10px" }}>
+              <span style={{ fontSize: "13px" }}>
+                <span style={{ fontWeight: "500" }}>Fakultas : </span>
+                {mahasiswaDetail?.fakultas[0]?.fakultas}
+              </span>
+            </Card>
+          </div>
+        </div>
+      )}
+
       {!editHide && (
         <div className={styles.container}>
           <div className={styles.cookiesContent} id="cookiesPopup">
             <button className={styles.close} onClick={(e) => setEditHide(true)}>
               ✖
             </button>
+            <img
+              src={
+                "https://pbs.twimg.com/profile_images/1537677628039380992/i3uUfk-Z_400x400.jpg"
+              }
+              style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "100px",
+                marginBottom: "5px",
+              }}
+            />
             <form action="" className={styles.form}>
               <input
                 className={styles.input}
@@ -523,6 +642,7 @@ const Card = styled.div`
   margin: 20px 30px 0 30px;
   display: flex;
   flex-direction: row;
+  width: 1005;
   align-items: center;
   justify-content: space-between;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
