@@ -104,7 +104,7 @@ export default function Index() {
                 />
                 <p>Dashboard</p>
               </li>
-              <li
+              {/* <li
                 className={styles.menuItem}
                 onClick={(e) => {
                   setActiveMenu("Search");
@@ -119,7 +119,7 @@ export default function Index() {
                   color={activeMenu == "Search" ? "#83D887" : "#FFFFFF"}
                 />
                 <p>Search</p>
-              </li>
+              </li> */}
             </ul>
           </div>
           <button className={styles.btn} onClick={logoutHandler}>

@@ -3,12 +3,16 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Swal from "sweetalert2";
 import styles from "../styles/Dashboard.module.css";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 function Dashboard() {
   const [mahasiswa, setMahasiswa] = useState([]);
+  const [mahasiswaDetail, setMahasiswaDetail] = useState([]);
   const [hide, setHide] = useState(true);
+  const [editHide, setEditHide] = useState(true);
   const [fakultas, setFakultas] = useState([]);
   const [validation, setValidation] = useState([]);
+  const [keyword, setKeyword] = useState("");
 
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
@@ -123,9 +127,56 @@ function Dashboard() {
       });
   };
 
-  // update handler
-  const updateHandler = async (e, NIM) => {
+  const fetchDataMahasiswaDetail = async (NIM) => {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await axios
+      .get(`http://localhost:8000/api/mahasiswa/${NIM}`)
+      .then((response) => {
+        setMahasiswaDetail(response.data.data[0]);
+      });
+  };
+
+  // edit handler
+  const editHandler = async (e, NIM) => {
     e.preventDefault();
+    fetchDataMahasiswaDetail(NIM);
+    setEditHide(false);
+  };
+
+  const editData = async (NIM) => {
+    const formData = new FormData();
+    formData.append("nama", nama);
+    formData.append("email", email);
+    formData.append("NIM", NIM);
+    formData.append("semester", semester);
+    formData.append("jenis_kelamin", jenisKelamin);
+    formData.append("angkatan", angkatan);
+    formData.append("fakultas_id", fakultasId);
+    formData.append("prodi_id", prodiId);
+
+    console.log(formData);
+
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    await axios
+      .post(`http://localhost:8000/api/mahasiswa/${NIM}`, formData)
+      .then((response) => {
+        setHide(true);
+        clearData();
+        Swal.fire(
+          "Success!",
+          "Data Mahasiswa Updated Successfully!",
+          "success"
+        );
+        fetchDataMahasiswa();
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        setValidation(error.response.data);
+      });
   };
 
   // fetch data user
@@ -141,10 +192,10 @@ function Dashboard() {
     fetchDataMahasiswa();
     fetchDataFakultas();
     fetchDataProgramStudi();
+    fetchDataMahasiswaDetail;
   }, []);
 
-  console.log(programStudi);
-  console.log(fakultasId);
+  console.log(mahasiswaDetail);
 
   return (
     <>
@@ -153,59 +204,223 @@ function Dashboard() {
       </h1>
 
       <div className={styles.tableContainer}>
-        <button
-          className={styles.btn}
+        <div
           style={{
-            background: "#DDEDFF",
-            color: "#288BFF",
-            marginLeft: "1.5rem",
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "row",
+            alignItems: "center",
           }}
-          onClick={(e) => setHide(false)}
         >
-          Tambah Data Mahasiswa
-        </button>
-        {mahasiswa.map((item) => (
-          <Card key={item?.NIM}>
-            <a
-              href={"/detail"}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <img
-                src={
-                  "https://pbs.twimg.com/profile_images/1537677628039380992/i3uUfk-Z_400x400.jpg"
-                }
-                style={{ width: "50px", height: "50px", borderRadius: "100px" }}
-              />
-              <Name>
-                <span>{item?.nama}</span> | {item?.NIM}
-              </Name>
-            </a>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginTop: "5px",
-              }}
-            >
-              <button
-                className={styles.btn}
-                style={{ background: "#FDF8EF", color: "#F6D35C" }}
+          <button
+            className={styles.btn}
+            style={{
+              background: "#DDEDFF",
+              color: "#288BFF",
+              marginLeft: "2rem",
+              marginTop: "0rem",
+            }}
+            onClick={(e) => setHide(false)}
+          >
+            Tambah Data Mahasiswa
+          </button>
+
+          <form
+            action=""
+            style={{
+              background: "white",
+              borderStyle: "solid",
+              borderWidth: "1px",
+              borderColor: "#f5f5f5",
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "10px",
+              marginRight: "2rem",
+              width: "250px",
+              height: "40px",
+            }}
+          >
+            <SearchRoundedIcon color="#020b2a" />
+            <input
+              className={styles.input2}
+              type="text"
+              placeholder="Masukkan Nama/NIM/Jurusan"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+          </form>
+        </div>
+
+        {mahasiswa
+          .filter((value) => {
+            if (keyword === "") {
+              return value;
+            } else if ((value?.NIM).includes(keyword)) {
+              return value;
+            } else if (
+              (value?.nama).toLowerCase().includes(keyword.toLowerCase())
+            ) {
+              return value;
+            } else if (
+              (value?.prodi[0]?.program_studi)
+                .toLowerCase()
+                .includes(keyword.toLowerCase())
+            ) {
+              return value;
+            }
+          })
+          .map((item) => (
+            <Card key={item?.NIM}>
+              <a
+                href={"/detail"}
+                style={{ display: "flex", alignItems: "center" }}
               >
-                Edit
-              </button>
-              <button
-                className={styles.btn}
-                style={{ background: "#FFECF2", color: "#E44A79" }}
-                onClick={(e) => {
-                  confirmDelete(e, item?.NIM);
+                <img
+                  src={
+                    "https://pbs.twimg.com/profile_images/1537677628039380992/i3uUfk-Z_400x400.jpg"
+                  }
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "100px",
+                  }}
+                />
+                <Name>
+                  <span>{item?.nama}</span> | {item?.NIM} |{" "}
+                  {item?.prodi[0]?.program_studi}
+                </Name>
+              </a>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "5px",
                 }}
               >
-                Delete
-              </button>
-            </div>
-          </Card>
-        ))}
+                <button
+                  className={styles.btn}
+                  style={{ background: "#FDF8EF", color: "#F6D35C" }}
+                  onClick={(e) => editHandler(e, item?.NIM)}
+                >
+                  Edit
+                </button>
+                <button
+                  className={styles.btn}
+                  style={{ background: "#FFECF2", color: "#E44A79" }}
+                  onClick={(e) => {
+                    confirmDelete(e, item?.NIM);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </Card>
+          ))}
       </div>
+
+      {!editHide && (
+        <div className={styles.container}>
+          <div className={styles.cookiesContent} id="cookiesPopup">
+            <button className={styles.close} onClick={(e) => setEditHide(true)}>
+              ✖
+            </button>
+            <form action="" className={styles.form}>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Masukkan Nama"
+                value={mahasiswaDetail.nama}
+                onChange={(e) => setNama(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="email"
+                placeholder="Masukkan Email"
+                value={mahasiswaDetail.email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Masukkan NIM"
+                value={mahasiswaDetail.NIM}
+                onChange={(e) => setNIM(e.target.value)}
+                readOnly
+                style={{ background: "#f7f7f9" }}
+              />
+              <input
+                className={styles.input}
+                type="number"
+                placeholder="Masukkan Semester"
+                value={mahasiswaDetail.semester}
+                onChange={(e) => setSemester(e.target.value)}
+              />
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Masukkan Angkatan"
+                value={mahasiswaDetail.angkatan}
+                onChange={(e) => setAngkatan(e.target.value)}
+              />
+              <select
+                className={styles.input}
+                style={{ paddingRight: "2rem" }}
+                value={mahasiswaDetail.jenis_kelamin}
+                onChange={(e) => setJenisKelamin(e.target.value)}
+              >
+                <option value={""}>Pilih Jenis Kelamin</option>
+                <option value={"Pria"}>Pria</option>
+                <option value={"Wanita"}>Wanita</option>
+              </select>
+              <select
+                className={styles.input}
+                style={{ paddingRight: "2rem" }}
+                value={mahasiswaDetail.fakultas_id}
+                onChange={(e) => setFakultasId(e.target.value)}
+              >
+                <option key={-1} value={-1}>
+                  Pilih Fakultas
+                </option>
+                {fakultas?.map((item) => (
+                  <option
+                    key={item?.id}
+                    value={item?.id}
+                    selected={
+                      mahasiswaDetail?.fakultas_id == item?.id
+                        ? "true"
+                        : "false"
+                    }
+                  >
+                    {item?.fakultas}
+                  </option>
+                ))}
+              </select>
+              <select
+                className={styles.input}
+                style={{ paddingRight: "2rem" }}
+                value={mahasiswaDetail.prodi_id}
+                onChange={(e) => setProdiId(e.target.value)}
+              >
+                <option key={-1} value={-1}>
+                  Pilih Program Studi
+                </option>
+                {programStudi?.map((item) => (
+                  <option
+                    key={item?.id}
+                    value={item?.id}
+                    selected={
+                      mahasiswaDetail?.prodi_id == item?.id ? "true" : "false"
+                    }
+                  >
+                    {item?.program_studi}
+                  </option>
+                ))}
+              </select>
+            </form>
+            <button className={styles.accept}>Edit Data</button>
+          </div>
+        </div>
+      )}
 
       {!hide && (
         <div className={styles.container}>
