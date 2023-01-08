@@ -23,12 +23,12 @@ You can login using to use the application
 ## RESULT
 
 <div style="display: flex">
-<img src="https://i.postimg.cc/wxkYMGgC/Screen-Shot-2022-12-02-at-15-10-48.png" style="height: 250px" />
-<img src="https://i.postimg.cc/LsPrpyx0/Screen-Shot-2022-12-02-at-15-10-55.png" style="height: 250px" />
-<img src="https://i.postimg.cc/hjg3qKzf/Screen-Shot-2022-12-02-at-15-12-27.png" style="height: 250px" />
-<img src="https://i.postimg.cc/0jXtmmtw/Screen-Shot-2022-12-02-at-15-12-44.png" style="height: 250px" />
-<img src="https://i.postimg.cc/Fs2p4hwN/Screen-Shot-2022-12-02-at-15-12-55.png" style="height: 250px" />
-<img src="https://i.postimg.cc/rp9Nxxsw/Screen-Shot-2022-12-02-at-15-13-04.png" style="height: 250px" />
-<img src="https://i.postimg.cc/h4M46jzQ/Screen-Shot-2022-12-02-at-15-13-15.png" style="height: 250px" />
+<img src="https://postimg.cc/YjhgnVPm" style="height: 250px" />
+<img src="https://postimg.cc/WD5FS66n" style="height: 250px" />
+<img src="https://postimg.cc/87V6CCzh" style="height: 250px" />
+<img src="https://postimg.cc/ykRRBRs1" style="height: 250px" />
+<img src="https://postimg.cc/ygWJGgLz" style="height: 250px" />
+<img src="https://postimg.cc/c623Vhqk" style="height: 250px" />
+<img src="https://postimg.cc/yJ13Fr9x" style="height: 250px" />
 </div>
 
