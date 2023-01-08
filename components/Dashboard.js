@@ -1,9 +1,10 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Swal from "sweetalert2";
 import styles from "../styles/Dashboard.module.css";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import SearchIcon from "@mui/icons-material/Search";
+import { SentimentSatisfiedAltSharp } from "@mui/icons-material";
 
 function Dashboard() {
   const [mahasiswa, setMahasiswa] = useState([]);
@@ -14,6 +15,11 @@ function Dashboard() {
   const [fakultas, setFakultas] = useState([]);
   const [validation, setValidation] = useState([]);
   const [keyword, setKeyword] = useState("");
+
+  const [fakultasForDetail, setFakultasForDetail] = useState([]);
+  const [prodiForDetail, setProdiForDetail] = useState([]);
+
+  const BASE_URL = process.env.NEXT_PUBLIC_BE;
 
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +36,7 @@ function Dashboard() {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     await axios
-      .get(`http://localhost:8000/api/fakultas`)
+      .get(`${BASE_URL}/fakultas`)
       .then((response) => {
         setFakultas(response.data.data);
       })
@@ -43,7 +49,7 @@ function Dashboard() {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     await axios
-      .get(`http://localhost:8000/api/prodi`)
+      .get(`${BASE_URL}/prodi`)
       .then((response) => {
         setProgramStudi(response.data.data);
       })
@@ -52,6 +58,7 @@ function Dashboard() {
       });
   };
 
+  // confirm delete
   const confirmDelete = (e, NIM) => {
     Swal.fire({
       title: "Are you sure?",
@@ -69,6 +76,7 @@ function Dashboard() {
     });
   };
 
+  // clear data
   const clearData = () => {
     setNama("");
     setEmail("");
@@ -87,7 +95,7 @@ function Dashboard() {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     await axios
-      .delete(`http://localhost:8000/api/mahasiswa/${NIM}`)
+      .delete(`${BASE_URL}/mahasiswa/${NIM}`)
       .then((response) => {
         fetchDataMahasiswa();
       })
@@ -114,7 +122,7 @@ function Dashboard() {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     await axios
-      .post("http://localhost:8000/api/mahasiswa", formData)
+      .post(`${BASE_URL}/mahasiswa`, formData)
       .then((response) => {
         setHide(true);
         clearData();
@@ -128,14 +136,15 @@ function Dashboard() {
       });
   };
 
+  // fetch data mahasiswa detail
   const fetchDataMahasiswaDetail = async (NIM) => {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    await axios
-      .get(`http://localhost:8000/api/mahasiswa/${NIM}`)
-      .then((response) => {
-        setMahasiswaDetail(response.data.data[0]);
-      });
+    await axios.get(`${BASE_URL}/mahasiswa/${NIM}`).then((response) => {
+      setMahasiswaDetail(response.data.data[0]);
+      setFakultasForDetail(response.data.data[0]?.fakultas[0]);
+      setProdiForDetail(response.data.data[0]?.prodi[0]);
+    });
   };
 
   // detail handler
@@ -152,7 +161,8 @@ function Dashboard() {
     setEditHide(false);
   };
 
-  const editData = async (NIM) => {
+  // edit data
+  const editHandlerData = async (NIM) => {
     const formData = new FormData();
     formData.append("nama", nama);
     formData.append("email", email);
@@ -163,15 +173,15 @@ function Dashboard() {
     formData.append("fakultas_id", fakultasId);
     formData.append("prodi_id", prodiId);
 
-    console.log(formData);
+    console.log(NIM);
 
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     await axios
-      .post(`http://localhost:8000/api/mahasiswa/${NIM}`, formData)
+      .post(`${BASE_URL}/mahasiswa/${NIM}`, formData)
       .then((response) => {
-        setHide(true);
+        setEditHide(true);
         clearData();
         Swal.fire(
           "Success!",
@@ -191,7 +201,7 @@ function Dashboard() {
   const fetchDataMahasiswa = async () => {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    await axios.get("http://localhost:8000/api/mahasiswa").then((response) => {
+    await axios.get(`${BASE_URL}/mahasiswa`).then((response) => {
       setMahasiswa(response.data.data);
     });
   };
@@ -212,7 +222,6 @@ function Dashboard() {
       <div
         style={{
           display: "flex",
-          justifyContent: "",
           alignItems: "center",
         }}
       >
@@ -321,12 +330,16 @@ function Dashboard() {
               height: "40px",
             }}
           >
-            <SearchRoundedIcon color="#020b2a" />
+            <span style={{ marginLeft: "6px", marginTop: "5px" }}>
+              <SearchIcon style={{ color: "#c2c2c2" }} />
+            </span>
+
             <input
               className={styles.input2}
               type="text"
               placeholder="Masukkan Nama/NIM/Jurusan"
               value={keyword}
+              style={{ marginLeft: "3px" }}
               onChange={(e) => setKeyword(e.target.value)}
             />
           </form>
@@ -485,14 +498,14 @@ function Dashboard() {
             <Card style={{ width: "100%", padding: "10px" }}>
               <span style={{ fontSize: "13px" }}>
                 <span style={{ fontWeight: "500" }}>Program Studi : </span>
-                {/* {mahasiswaDetail} */}
+                {prodiForDetail?.program_studi}
               </span>
             </Card>
 
             <Card style={{ width: "100%", padding: "10px" }}>
               <span style={{ fontSize: "13px" }}>
                 <span style={{ fontWeight: "500" }}>Fakultas : </span>
-                {/* {mahasiswaDetail?.fakultas[0]} */}
+                {fakultasForDetail?.fakultas}
               </span>
             </Card>
           </div>
@@ -521,21 +534,21 @@ function Dashboard() {
                 className={styles.input}
                 type="text"
                 placeholder="Masukkan Nama"
-                value={mahasiswaDetail.nama}
+                defaultValue={mahasiswaDetail.nama}
                 onChange={(e) => setNama(e.target.value)}
               />
               <input
                 className={styles.input}
                 type="email"
                 placeholder="Masukkan Email"
-                value={mahasiswaDetail.email}
+                defaultValue={mahasiswaDetail.email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               <input
                 className={styles.input}
                 type="text"
                 placeholder="Masukkan NIM"
-                value={mahasiswaDetail.NIM}
+                defaultValue={mahasiswaDetail.NIM}
                 onChange={(e) => setNIM(e.target.value)}
                 readOnly
                 style={{ background: "#f7f7f9" }}
@@ -544,20 +557,21 @@ function Dashboard() {
                 className={styles.input}
                 type="number"
                 placeholder="Masukkan Semester"
-                value={mahasiswaDetail.semester}
+                defaultValue={mahasiswaDetail.semester}
                 onChange={(e) => setSemester(e.target.value)}
+                required
               />
               <input
                 className={styles.input}
                 type="text"
                 placeholder="Masukkan Angkatan"
-                value={mahasiswaDetail.angkatan}
+                defaultValue={mahasiswaDetail.angkatan}
                 onChange={(e) => setAngkatan(e.target.value)}
               />
               <select
                 className={styles.input}
                 style={{ paddingRight: "2rem" }}
-                value={mahasiswaDetail.jenis_kelamin}
+                defaultValue={mahasiswaDetail.jenis_kelamin}
                 onChange={(e) => setJenisKelamin(e.target.value)}
               >
                 <option value={""}>Pilih Jenis Kelamin</option>
@@ -567,7 +581,8 @@ function Dashboard() {
               <select
                 className={styles.input}
                 style={{ paddingRight: "2rem" }}
-                value={mahasiswaDetail.fakultas_id}
+                defaultValue={fakultasForDetail?.id}
+                value={fakultasId}
                 onChange={(e) => setFakultasId(e.target.value)}
               >
                 <option key={-1} value={-1}>
@@ -577,11 +592,11 @@ function Dashboard() {
                   <option
                     key={item?.id}
                     value={item?.id}
-                    selected={
-                      mahasiswaDetail?.fakultas_id == item?.id
-                        ? "true"
-                        : "false"
-                    }
+                    // selected={
+                    //   mahasiswaDetail?.fakultas_id == item?.id
+                    //     ? "true"
+                    //     : "false"
+                    // }
                   >
                     {item?.fakultas}
                   </option>
@@ -590,7 +605,8 @@ function Dashboard() {
               <select
                 className={styles.input}
                 style={{ paddingRight: "2rem" }}
-                value={mahasiswaDetail.prodi_id}
+                defaultValue={prodiForDetail?.id}
+                value={prodiId}
                 onChange={(e) => setProdiId(e.target.value)}
               >
                 <option key={-1} value={-1}>
@@ -600,16 +616,21 @@ function Dashboard() {
                   <option
                     key={item?.id}
                     value={item?.id}
-                    selected={
-                      mahasiswaDetail?.prodi_id == item?.id ? "true" : "false"
-                    }
+                    // selected={
+                    //   mahasiswaDetail?.prodi_id == item?.id ? "true" : "false"
+                    // }
                   >
                     {item?.program_studi}
                   </option>
                 ))}
               </select>
             </form>
-            <button className={styles.accept}>Edit Data</button>
+            <button
+              className={styles.accept}
+              onClick={(e) => editHandlerData(mahasiswaDetail?.NIM)}
+            >
+              Edit Data
+            </button>
           </div>
         </div>
       )}
@@ -629,7 +650,11 @@ function Dashboard() {
                 type="text"
                 placeholder="Masukkan Nama"
                 value={nama}
-                onChange={(e) => setNama(e.target.value)}
+                onChange={(e) =>
+                  e.target.value == null
+                    ? setNama(e.target.defaultValue)
+                    : setNama(e.target.value)
+                }
               />
               <input
                 className={styles.input}

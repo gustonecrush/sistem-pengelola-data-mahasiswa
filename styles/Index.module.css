@@ -29,6 +29,8 @@
   background: purple;
   padding: 4rem;
   background: #fff;
+  height: 100vh;
+  overflow: scroll;
 }
 
 .btn {

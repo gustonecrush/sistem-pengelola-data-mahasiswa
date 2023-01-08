@@ -22,11 +22,13 @@ export default function Index() {
   // router
   const router = useRouter();
 
+  const BASE_URL = process.env.NEXT_PUBLIC_BE;
+
   // fetch data user
   const fetchDataUser = async () => {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    await axios.post("http://localhost:8000/api/me").then((response) => {
+    await axios.post(`${BASE_URL}/me`).then((response) => {
       setUser(response.data);
     });
   };
@@ -45,7 +47,7 @@ export default function Index() {
   const logoutHandler = async () => {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    await axios.post("http://localhost:8000/api/logout").then((response) => {
+    await axios.post(`${BASE_URL}/logout`).then((response) => {
       localStorage.removeItem("token");
       router.push("/login");
       Swal.fire("Success!", "Logout Successfully!", "success");

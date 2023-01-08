@@ -11,6 +11,8 @@ function Login() {
   const [hide, setHide] = useState(false);
   const [close, setClose] = useState(false);
 
+  const BASE_URL = process.env.NEXT_PUBLIC_BE;
+
   // user input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,7 @@ function Login() {
     formData.append("password", password);
 
     await axios
-      .post("http://localhost:8000/api/login", formData)
+      .post(`${BASE_URL}/login`, formData)
       .then((response) => {
         localStorage.setItem("token", response.data.access_token);
         router.push("/");
