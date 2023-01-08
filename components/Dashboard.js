@@ -203,15 +203,88 @@ function Dashboard() {
     fetchDataMahasiswaDetail;
   }, []);
 
-  console.log(mahasiswaDetail?.prodi[0]?.program_studi);
-
   return (
     <>
       <h1 className={styles.heading} style={{ fontWeight: "500" }}>
         Dashboard
       </h1>
 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "",
+          alignItems: "center",
+        }}
+      >
+        <div
+          className={styles.tableContainer}
+          style={{
+            width: "15rem",
+            marginRight: "15px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <span style={{ color: "#020b2a" }}>Jumlah Mahasiswa</span>
+          <span
+            style={{ fontSize: "3.5rem", color: "#83D887", fontWeight: "500" }}
+          >
+            {mahasiswa?.length}
+          </span>
+        </div>
+        <div
+          className={styles.tableContainer}
+          style={{
+            width: "15rem",
+            marginRight: "15px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <span style={{ color: "#020b2a" }}>Jumlah Fakultas</span>
+          <span
+            style={{ fontSize: "3.5rem", color: "#83D887", fontWeight: "500" }}
+          >
+            {fakultas?.length}
+          </span>
+        </div>
+        <div
+          className={styles.tableContainer}
+          style={{
+            width: "15rem",
+            marginRight: "15px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <span style={{ color: "#020b2a" }}>Jumlah Prodi</span>
+          <span
+            style={{ fontSize: "3.5rem", color: "#83D887", fontWeight: "500" }}
+          >
+            {programStudi?.length}
+          </span>
+        </div>
+      </div>
+
       <div className={styles.tableContainer}>
+        <h1
+          className={styles.heading}
+          style={{ fontWeight: "500", fontSize: "2rem", marginLeft: "2rem" }}
+        >
+          🎓 Data Mahasiswa
+        </h1>
+
+        <div
+          style={{
+            background: "#f5f5f5",
+            height: "1px",
+            marginTop: "1rem",
+            marginBottom: "1.5rem",
+            marginLeft: "2rem",
+            marginRight: "2rem",
+          }}
+        ></div>
+
         <div
           style={{
             display: "flex",
@@ -412,14 +485,14 @@ function Dashboard() {
             <Card style={{ width: "100%", padding: "10px" }}>
               <span style={{ fontSize: "13px" }}>
                 <span style={{ fontWeight: "500" }}>Program Studi : </span>
-                {mahasiswaDetail?.prodi[0]?.program_studi}
+                {/* {mahasiswaDetail} */}
               </span>
             </Card>
 
             <Card style={{ width: "100%", padding: "10px" }}>
               <span style={{ fontSize: "13px" }}>
                 <span style={{ fontWeight: "500" }}>Fakultas : </span>
-                {mahasiswaDetail?.fakultas[0]?.fakultas}
+                {/* {mahasiswaDetail?.fakultas[0]} */}
               </span>
             </Card>
           </div>
@@ -547,6 +620,9 @@ function Dashboard() {
             <button className={styles.close} onClick={(e) => setHide(true)}>
               ✖
             </button>
+            <Name style={{ marginTop: "-20px", marginBottom: "20px" }}>
+              <span>Tambah Data Mahasiswa</span>
+            </Name>
             <form action="" className={styles.form}>
               <input
                 className={styles.input}

@@ -34,7 +34,7 @@
   color: #000;
   text-align: center;
   border-radius: 20px;
-  padding: 30px 30px 70px;
+  padding: 30px;
 }
 
 .close {
@@ -96,7 +96,7 @@
   border: none;
   outline: none;
   border: 1px solid #f5f5f5;
-  padding: 10px;
+  padding: 8px;
   border-radius: 10px;
   margin-top: 15px;
   color: #020b2a;

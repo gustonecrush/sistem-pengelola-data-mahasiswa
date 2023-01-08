@@ -62,6 +62,18 @@ export default function Index() {
       </Head>
       <main className={styles.main}>
         <div className={styles.sidebar}>
+          <img
+            src={
+              "https://pbs.twimg.com/profile_images/1537677628039380992/i3uUfk-Z_400x400.jpg"
+            }
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "100px",
+              marginBottom: "15px",
+              marginTop: "-50px",
+            }}
+          />
           <div className={styles.profile}>
             {/* <Image /> */}
             <ul className={styles.profileContainerList}>
